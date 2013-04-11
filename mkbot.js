@@ -47,7 +47,7 @@ client.addListener('registered', function(message) {
 
 client.addListener('join', function(channel, nick, message) {
    toLog(nick + ' has joined '+channel);
-   announceMyself();
+   //announceMyself();
 });
 
 client.addListener('part', function(channel, nick, reason, message) {
