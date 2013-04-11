@@ -50,10 +50,18 @@ client.addListener('join', function(channel, nick, message) {
    announceMyself();
 });
 
+client.addListener('part', function(channel, nick, reason, message) {
+   toLog(nick + ' has left '+channel);
+});
+
+client.addListener('quit', function(nick, reason, channels, message) {
+   toLog(nick + ' has discoonected');
+});
+
 function toLog(str) {
     var now = new Date(),
-    	dts = strftime('%F %T %z', new Date()),
-    	filename = __dirname+'/public/logs/'+strftime('%F')+".txt";
+        dts = strftime('%F %T %z', new Date()),
+        filename = __dirname+'/public/logs/'+strftime('%F')+".txt";
 
     fs.appendFile(filename, '['+dts+'] '+str+"\n", function (err) {
        if (err) {
