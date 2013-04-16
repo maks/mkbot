@@ -55,7 +55,7 @@ client.addListener('part', function(channel, nick, reason, message) {
 });
 
 client.addListener('quit', function(nick, reason, channels, message) {
-   toLog(nick + ' has discoonected');
+   toLog(nick + ' has disconnected');
 });
 
 function toLog(str) {
