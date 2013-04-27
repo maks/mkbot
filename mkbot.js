@@ -6,7 +6,7 @@ var fs = require('fs'),
     ecstatic = require('ecstatic'),
     irc = require('irc'),
     strftime = require('strftime'),
-    channel = '#js-git',
+    channels = ['#js-git'],
     botname = 'mkbot',
     PORT = 8001,
     HOST = 'manichord.com',
@@ -20,7 +20,7 @@ var fs = require('fs'),
              gzip       : false
            },     
     client = new irc.Client('irc.freenode.net', botname, {
-       channels: [channel]
+       channels: channels
     });
 
 http.createServer(
@@ -29,7 +29,7 @@ http.createServer(
 
 
 client.addListener('message', function (from, to, message) {
-    toLog(from + ' => ' + to + ': ' + message);
+    toLog(to, '< '+ from + '> ' + message);
 });
 
 client.addListener('pm', function (from, message) {
@@ -42,36 +42,31 @@ client.addListener('error', function(message) {
 
 client.addListener('registered', function(message) {
    console.log('registered ok');
-   announceMyself();
 });
 
 client.addListener('join', function(channel, nick, message) {
-   toLog(nick + ' has joined '+channel);
-   //announceMyself();
+   toLog(channel, nick + ' has joined '+channel);
 });
 
 client.addListener('part', function(channel, nick, reason, message) {
-   toLog(nick + ' has left '+channel);
+   toLog(channel, nick + ' has left '+channel);
 });
 
 client.addListener('quit', function(nick, reason, channels, message) {
-   toLog(nick + ' has disconnected');
+   //FIXME: need to iterate over all channels
+    //toLog(channel, nick + ' has disconnected');
 });
 
-function toLog(str) {
+function toLog(chan, str) {
     var now = new Date(),
-        dts = strftime('%F %T %z', new Date()),
-        filename = __dirname+'/public/logs/'+strftime('%F')+".txt";
+        dts = strftime('%T %z', new Date()),
+        filename = __dirname+'/public/logs/'+chan.replace(/#*/,'')+'/'+strftime('%F')+".txt";
 
     fs.appendFile(filename, '['+dts+'] '+str+"\n", function (err) {
        if (err) {
            console.error('error appending to logfile '+filename+' '+err);
        }
     });
-}
-
-function announceMyself() {
-    client.say(channel, "Hi I'm "+botname+" and I'm logging this channel. Log archive at: http://"+HOST+':'+PORT+'/logs/');
 }
 
 
